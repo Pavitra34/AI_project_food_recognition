@@ -1,0 +1,29 @@
+# Python
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
+
+# Trained models
+*.h5
+*.keras
+
+# TensorFlow checkpoints
+checkpoints/
+
+# Ignore datasets
+datasets/food-101/
+datasets/custom/
+
+# Ignore virtual environment
+backend/venv/
+venv/
