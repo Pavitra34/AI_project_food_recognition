@@ -1,29 +1,94 @@
+# ==============================
 # Python
+# ==============================
 venv/
 backend/venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Jupyter
+# ==============================
+# Environment Variables
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Jupyter Notebook
+# ==============================
 .ipynb_checkpoints/
 
+# ==============================
 # VS Code
+# ==============================
 .vscode/
 
-# Environment
-.env
-
-# Trained models
+# ==============================
+# AI Models
+# ==============================
 *.h5
 *.keras
+*.pt
+*.pth
+*.onnx
 
-# TensorFlow checkpoints
+# TensorFlow Checkpoints
 checkpoints/
 
-# Ignore datasets
-datasets/food-101/
-datasets/custom/
+# ==============================
+# Datasets
+# ==============================
+datasets/
+!datasets/README.md
 
-# Ignore virtual environment
-backend/venv/
-venv/
+# ==============================
+# React Native / Expo
+# ==============================
+frontend/node_modules/
+frontend/.expo/
+frontend/.expo-shared/
+frontend/dist/
+frontend/web-build/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Expo
+frontend/expo-env.d.ts
+
+# ==============================
+# macOS
+# ==============================
+.DS_Store
+
+# ==============================
+# Windows
+# ==============================
+Thumbs.db
+Desktop.ini
+
+# ==============================
+# Coverage
+# ==============================
+coverage/
+
+# ==============================
+# Build Files
+# ==============================
+build/
+dist/
+
+# ==============================
+# IDE
+# ==============================
+.idea/
+
+# ==============================
+# Temporary Files
+# ==============================
+*.tmp
+*.log
