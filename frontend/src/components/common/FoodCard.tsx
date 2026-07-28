@@ -25,7 +25,9 @@ type Props = {
   onDelete?: () => void;   // <-- Add this
 };
 
-
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString("en-GB");
+};
 
 
 
@@ -124,7 +126,7 @@ useEffect(() => {
           </Text>
 
           <Text style={styles.time}>
-            🕒 {item.created_at ?? "Just now"}
+            🕒 {formatDate(item.created_at)}
           </Text>
         </View>
       </TouchableOpacity>
@@ -156,25 +158,15 @@ useEffect(() => {
     >
       {item.food_name.replace(/_/g, " ")}
     </Text>
-
-    {onDelete && (
-      <TouchableOpacity onPress={handleDeletePress}>
-        <Ionicons
-          name="trash-outline"
-          size={22}
-          color="#EF4444"
-        />
-      </TouchableOpacity>
-    )}
   </View>
 
   <Text style={styles.calories}>
     🔥 {item.nutrition?.calories ?? 0} kcal
   </Text>
 
-  <Text style={styles.time}>
-    🕒 {item.created_at ?? "Recently"}
-  </Text>
+<Text style={styles.time}>
+  🕒 {item.created_at ? formatDate(item.created_at) : "Recently"}
+</Text>
 </View>
 
 <View style={styles.rightSide}>
@@ -184,12 +176,25 @@ useEffect(() => {
     </Text>
   </View>
 
+  {onDelete && (
+    <TouchableOpacity
+      style={styles.deleteButton}
+      onPress={handleDeletePress}
+    >
+      <Ionicons
+        name="trash-outline"
+        size={24}
+        color="#EF4444"
+      />
+    </TouchableOpacity>
+  )}
+
   <TouchableOpacity
     onPress={(e) => {
-        e.stopPropagation?.();
-        handleFavorite();
+      e.stopPropagation?.();
+      handleFavorite();
     }}
->
+  >
     <Ionicons
       name={favorite ? "heart" : "heart-outline"}
       size={28}
@@ -287,12 +292,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  rightSide: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 80,
-    marginLeft: 10,
-  },
+rightSide: {
+  justifyContent: "center",
+  alignItems: "center",
+  marginLeft: 12,
+},
+
+deleteButton: {
+  marginVertical: 10,
+},
 
   badge: {
     backgroundColor: "#0F8A83",

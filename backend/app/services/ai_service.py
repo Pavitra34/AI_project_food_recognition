@@ -8,7 +8,7 @@ from tensorflow.keras.applications.efficientnet import preprocess_input
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODEL_PATH = BASE_DIR / "ml" / "efficientnetb0_100layers.keras"
+MODEL_PATH = BASE_DIR / "ml" / "efficientnetb0_150layers.keras"
 CLASS_PATH = BASE_DIR / "ml" / "class_names.json"
 
 print("Loading EfficientNetB0 model...")
