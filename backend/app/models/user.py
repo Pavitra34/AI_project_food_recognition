@@ -19,6 +19,7 @@ class User(Base):
     weight = Column(Float, nullable=True)
     goal = Column(String(50), nullable=True)
     activity_level = Column(String(50), nullable=True)
+    health_condition = Column(String(100), nullable=True)
 
     bmi = Column(Float, nullable=True)
     bmi_category = Column(String(30), nullable=True)

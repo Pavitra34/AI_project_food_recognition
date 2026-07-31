@@ -7,6 +7,7 @@ export type UserProfile = {
   weight?: number | null;
   goal?: string | null;
   activity_level?: string | null;
+   health_condition: string | null;
   bmi?: number | null;
   bmi_category?: string | null;
   member_since?: string | null;

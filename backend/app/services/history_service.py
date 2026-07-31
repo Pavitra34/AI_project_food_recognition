@@ -43,6 +43,7 @@ def get_history(user_id: int, db: Session):
             "food_name": scan.food_name,
             "confidence": scan.confidence,
             "image_path": image_path,
+            "created_at": scan.created_at.isoformat() if scan.created_at else None,
             "nutrition": {
                 "calories": nutrition.calories if nutrition else 0,
                 "protein": nutrition.protein if nutrition else 0,

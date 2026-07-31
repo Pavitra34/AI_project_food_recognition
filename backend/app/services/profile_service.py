@@ -27,6 +27,7 @@ def update_profile(
     weight: float,
     goal: str,
     activity_level: str,
+    health_condition: str,
     db: Session,
 ):
 
@@ -40,6 +41,7 @@ def update_profile(
     user.weight = weight
     user.goal = goal
     user.activity_level = activity_level
+    user.health_condition = health_condition
 
     user.bmi = bmi
     user.bmi_category = category

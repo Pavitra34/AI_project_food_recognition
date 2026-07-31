@@ -25,8 +25,16 @@ type Props = {
   onDelete?: () => void;   // <-- Add this
 };
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-GB");
+const formatDate = (date?: string) => {
+  if (!date) return "Recently";
+
+  const parsed = new Date(date);
+
+  if (isNaN(parsed.getTime())) {
+    return "Recently";
+  }
+
+  return parsed.toLocaleDateString("en-GB");
 };
 
 
@@ -68,6 +76,8 @@ useEffect(() => {
     onDelete?.();
   };
   const imageUrl = `${API_BASE_URL}${item.image_path}`;
+  console.log("Food Item:", item);
+  console.log("created_at:", item.created_at);
 
   if (variant === "horizontal") {
     return (

@@ -228,6 +228,39 @@ export default function ScanScreen() {
                   </View>
                 </View>
 
+                <View
+  style={[
+    styles.recommendationCard,
+    scanResult.recommendation.status === "Suitable"
+      ? styles.suitableCard
+      : scanResult.recommendation.status === "Consume in Moderation"
+      ? styles.moderateCard
+      : styles.avoidCard,
+  ]}
+>
+  <Text style={styles.recommendationTitle}>
+    Recommendation
+  </Text>
+
+  <Text
+    style={[
+      styles.recommendationStatus,
+      scanResult.recommendation.status === "Suitable"
+        ? styles.suitableText
+        : scanResult.recommendation.status ===
+          "Consume in Moderation"
+        ? styles.moderateText
+        : styles.avoidText,
+    ]}
+  >
+    {scanResult.recommendation.status}
+  </Text>
+
+  <Text style={styles.recommendationReason}>
+    {scanResult.recommendation.reason}
+  </Text>
+</View>
+
                 <TouchableOpacity
                   style={styles.doneButton}
                   onPress={() => {
@@ -487,4 +520,56 @@ const styles = StyleSheet.create({
     color: PRIMARY,
     fontWeight: "700",
   },
+  recommendationCard: {
+  marginTop: 18,
+  padding: 16,
+  borderRadius: 14,
+  borderWidth: 1,
+},
+
+recommendationTitle: {
+  fontSize: 17,
+  fontWeight: "700",
+  color: "#111827",
+  marginBottom: 8,
+},
+
+recommendationStatus: {
+  fontSize: 18,
+  fontWeight: "700",
+},
+
+recommendationReason: {
+  marginTop: 8,
+  fontSize: 14,
+  lineHeight: 22,
+  color: "#4B5563",
+},
+
+suitableCard: {
+  backgroundColor: "#ECFDF5",
+  borderColor: "#10B981",
+},
+
+moderateCard: {
+  backgroundColor: "#FFFBEB",
+  borderColor: "#F59E0B",
+},
+
+avoidCard: {
+  backgroundColor: "#FEF2F2",
+  borderColor: "#EF4444",
+},
+
+suitableText: {
+  color: "#059669",
+},
+
+moderateText: {
+  color: "#D97706",
+},
+
+avoidText: {
+  color: "#DC2626",
+},
 });

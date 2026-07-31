@@ -33,7 +33,7 @@ def get_food_nutrition(food_name: str):
     params = {
         "query": search_name,
         "api_key": API_KEY,
-        "pageSize": 1
+        "pageSize": 10
     }
 
     response = requests.get(SEARCH_URL, params=params)
@@ -50,20 +50,48 @@ def get_food_nutrition(food_name: str):
         print("No food found in USDA")
         return None
 
-    food = data["foods"][0]
+    # Get all foods
+    foods = data["foods"]
+
+    # Try to find the best matching food
+    food = None
+
+    for item in foods:
+        description = item.get("description", "").lower()
+
+        if search_name.lower() in description:
+            food = item
+            break
+
+    # If no exact match, use first result
+    if food is None:
+        food = foods[0]
 
     print("Matched Food:", food.get("description"))
 
     nutrients = {}
 
-    for item in food.get("foodNutrients", []):
-        nutrients[item["nutrientName"]] = item.get("value", 0)
+    for nutrient in food.get("foodNutrients", []):
+        nutrients[nutrient["nutrientName"]] = nutrient.get("value", 0)
 
-    return {
+    nutrition = {
         "calories": nutrients.get("Energy", 0),
         "protein": nutrients.get("Protein", 0),
         "carbs": nutrients.get("Carbohydrate, by difference", 0),
         "fat": nutrients.get("Total lipid (fat)", 0),
         "fiber": nutrients.get("Fiber, total dietary", 0),
-        "sugar": nutrients.get("Sugars, total including NLEA", 0),
+
+        # USDA may use either of these names
+        "sugar": nutrients.get(
+            "Sugars, total including NLEA",
+            nutrients.get("Total Sugars", 0)
+        ),
+
+        "sodium": nutrients.get("Sodium, Na", 0),
+        "cholesterol": nutrients.get("Cholesterol", 0),
+        "iron": nutrients.get("Iron, Fe", 0),
     }
+
+    print("Nutrition:", nutrition)
+
+    return nutrition

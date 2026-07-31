@@ -21,6 +21,8 @@ const normalizeProfile = (
   weight: data.weight ?? cached?.weight ?? null,
   goal: data.goal ?? cached?.goal ?? null,
   activity_level: data.activity_level ?? cached?.activity_level ?? null,
+  health_condition:
+  data.health_condition ?? cached?.health_condition ?? null,
   bmi: data.bmi ?? cached?.bmi ?? null,
   bmi_category: data.bmi_category ?? cached?.bmi_category ?? null,
   member_since:

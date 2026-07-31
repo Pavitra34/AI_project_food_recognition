@@ -7,6 +7,7 @@ export type ScanResult = {
   food_name: string;
   confidence: number;
   image_path: string;
+
   nutrition: {
     calories: number;
     protein: number;
@@ -14,6 +15,14 @@ export type ScanResult = {
     fat: number;
     fiber?: number;
     sugar?: number;
+    sodium?: number;
+    cholesterol?: number;
+    iron?: number;
+  };
+
+  recommendation: {
+    status: string;
+    reason: string;
   };
 };
 

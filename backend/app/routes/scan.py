@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.database import SessionLocal
 from app.services.scan_service import scan_food
 from app.utils.jwt import verify_token
+from app.utils.auth_dependency import get_current_user
 
 router = APIRouter(
     prefix="/api",
@@ -36,5 +37,17 @@ def upload_food(
     return scan_food(
         file=file,
         user_id=payload["user_id"],
+        db=db
+    )
+
+@router.post("/scan")
+def upload_food(
+    current_user=Depends(get_current_user),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    return scan_food(
+        file=file,
+        user_id=current_user["user_id"],
         db=db
     )

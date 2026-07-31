@@ -9,6 +9,8 @@ from app.models.food_scan import FoodScan
 from app.models.nutrition_log import NutritionLog
 from app.services.ai_service import predict_food
 from app.services.nutrition_service import get_food_nutrition
+from app.models.user import User
+from app.services.recommendation_service import get_recommendation
 
 UPLOAD_FOLDER = "app/uploads/food"
 CONFIDENCE_THRESHOLD = 50
@@ -37,9 +39,10 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
     # AI Prediction
     prediction = predict_food(image_path)
 
-    print("Prediction:", prediction)
+    print("========== PREDICTION ==========")
+    print(prediction)
 
-    # Confidence threshold check before saving or fetching nutrition
+    # Confidence check
     if prediction["confidence"] < CONFIDENCE_THRESHOLD:
         if os.path.exists(image_path):
             os.remove(image_path)
@@ -53,14 +56,11 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
             ),
         )
 
-    # Get Nutrition
+    # Nutrition
     nutrition = get_food_nutrition(
         prediction["food_name"]
     )
 
-    print("Nutrition:", nutrition)
-
-    # If nutrition not found
     if nutrition is None:
         nutrition = {
             "calories": 0,
@@ -70,6 +70,17 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
             "fiber": 0,
             "sugar": 0,
         }
+
+    # Get User
+    user = db.query(User).filter(User.id == user_id).first()
+
+    print("========== USER ==========")
+    print("Goal :", user.goal)
+    print("Health Condition :", user.health_condition)
+    print("BMI :", user.bmi)
+
+    print("========== NUTRITION ==========")
+    print(nutrition)
 
     # Save Food Scan
     food_scan = FoodScan(
@@ -82,6 +93,17 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
     db.add(food_scan)
     db.commit()
     db.refresh(food_scan)
+
+    # Recommendation
+    recommendation = get_recommendation(
+        nutrition=nutrition,
+        goal=user.goal,
+        health_condition=user.health_condition,
+        bmi=user.bmi,
+    )
+
+    print("========== RECOMMENDATION ==========")
+    print(recommendation)
 
     # Save Nutrition
     nutrition_log = NutritionLog(
@@ -102,5 +124,7 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
         "food_name": food_scan.food_name,
         "confidence": food_scan.confidence,
         "image_path": food_scan.image_path,
-        "nutrition": nutrition
+        "nutrition": nutrition,
+        "recommendation": recommendation
     }
+

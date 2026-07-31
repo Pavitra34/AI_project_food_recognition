@@ -55,6 +55,7 @@ def update_user_profile(
         weight=request.weight,
         goal=request.goal,
         activity_level=request.activity_level,
+        health_condition=request.health_condition,
         db=db,
     )
 

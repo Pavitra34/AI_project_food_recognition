@@ -8,6 +8,7 @@ class ProfileUpdateRequest(BaseModel):
     weight: float
     goal: str
     activity_level: str
+    health_condition: str
 
 
 from pydantic import BaseModel
@@ -23,6 +24,7 @@ class ProfileResponse(BaseModel):
 
     goal: str | None = None
     activity_level: str | None = None
+    health_condition: str | None = None
 
     bmi: float | None = None
     bmi_category: str | None = None

@@ -14,6 +14,7 @@ type Props = {
     bmi_category: string;
     goal: string;
     activity_level: string;
+    health_condition: string;
   } | null;
 };
 
@@ -35,38 +36,40 @@ export default function BMICard({
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>BMI</Text>
+  <Text style={styles.label}>BMI</Text>
+  <Text style={styles.value}>
+    {profile?.bmi?.toFixed(2) ?? "--"}
+  </Text>
+</View>
 
-        <Text style={styles.value}>
-          {profile?.bmi?.toFixed(2) ?? "--"}
-        </Text>
-      </View>
+<View style={styles.row}>
+  <Text style={styles.label}>Category</Text>
+  <Text style={styles.value}>
+    {profile?.bmi_category ?? "--"}
+  </Text>
+</View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Category</Text>
+<View style={styles.row}>
+  <Text style={styles.label}>Goal</Text>
+  <Text style={styles.value}>
+    {profile?.goal ?? "--"}
+  </Text>
+</View>
 
-        <Text style={styles.value}>
-          {profile?.bmi_category ?? "--"}
-        </Text>
-      </View>
+{/* ✅ Health Condition */}
+<View style={styles.row}>
+  <Text style={styles.label}>Health Condition</Text>
+  <Text style={styles.value}>
+    {profile?.health_condition ?? "Healthy"}
+  </Text>
+</View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Goal</Text>
-
-        <Text style={styles.value}>
-          {profile?.goal ?? "--"}
-        </Text>
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>
-          Activity
-        </Text>
-
-        <Text style={styles.value}>
-          {profile?.activity_level ?? "--"}
-        </Text>
-      </View>
+<View style={styles.row}>
+  <Text style={styles.label}>Activity</Text>
+  <Text style={styles.value}>
+    {profile?.activity_level ?? "--"}
+  </Text>
+</View>
     </View>
   );
 }

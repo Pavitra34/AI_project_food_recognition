@@ -18,6 +18,7 @@ import { showError, showSuccess } from "../../utils/toast";
 const PRIMARY = "#0F8A83";
 
 export default function HealthProfileScreen({
+  
   navigation,
 }: any) {
   const [age, setAge] = useState("");
@@ -27,6 +28,8 @@ export default function HealthProfileScreen({
   const [goal, setGoal] = useState("");
   const [activityLevel, setActivityLevel] =
     useState("");
+    const [healthCondition, setHealthCondition] = useState("Healthy");
+
 
   const validate = async () => {
     if (
@@ -41,14 +44,15 @@ export default function HealthProfileScreen({
       return;
     }
 
-    const profileData = {
-      age: Number(age),
-      gender,
-      height: Number(height),
-      weight: Number(weight),
-      goal,
-      activity_level: activityLevel,
-    };
+const profileData = {
+  age: Number(age),
+  gender,
+  height: Number(height),
+  weight: Number(weight),
+  goal,
+  activity_level: activityLevel,
+  health_condition: healthCondition,
+};
 
     try {
       await updateProfile(profileData);
@@ -316,6 +320,7 @@ export default function HealthProfileScreen({
           <Text style={styles.sectionTitle}>
             Goal
           </Text>
+          
 
           <View style={styles.optionGrid}>
             {[
@@ -365,6 +370,47 @@ export default function HealthProfileScreen({
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* ---------- Health Condition ---------- */}
+
+<Text style={styles.sectionTitle}>
+  Health Condition
+</Text>
+
+<View style={styles.optionGrid}>
+  {[
+    "Healthy",
+    "Diabetes",
+    "Hypertension",
+    "Heart Disease",
+    "Kidney Disease",
+    "Pregnant",
+  ].map((item) => (
+    <TouchableOpacity
+      key={item}
+      style={[
+        styles.optionCard,
+        healthCondition === item &&
+          styles.selectedCard,
+      ]}
+      onPress={() =>
+        setHealthCondition(item)
+      }
+    >
+      <Text
+        style={[
+          styles.optionText,
+          healthCondition === item &&
+            styles.selectedText,
+        ]}
+      >
+        {item}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
+
+          
 
           {/* ---------- Activity Level ---------- */}
 
