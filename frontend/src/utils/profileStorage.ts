@@ -97,5 +97,19 @@ export const saveProfileAvatar = async (
 };
 
 export const clearAuthSession = async () => {
-  await AsyncStorage.multiRemove(["token", "user"]);
+  const authUser = await getStoredAuthUser();
+
+  console.log("========== LOGOUT ==========");
+
+  if (authUser?.id) {
+    console.log("User ID:", authUser.id);
+  }
+
+  await AsyncStorage.removeItem("token");
+  console.log("✓ Token removed");
+
+  await AsyncStorage.removeItem("auth_user");
+  console.log("✓ Auth user removed");
+
+  console.log("========== LOGOUT COMPLETED ==========");
 };

@@ -70,14 +70,15 @@ export default function UpdateBMIScreen({ navigation }: any) {
     try {
       setSaving(true);
 
-      await updateProfile({
-        age: profile.age,
-        gender: profile.gender,
-        height: Number(height),
-        weight: Number(weight),
-        goal: profile.goal,
-        activity_level: profile.activity_level,
-      });
+await updateProfile({
+  age: profile.age,
+  gender: profile.gender,
+  height: Number(height),
+  weight: Number(weight),
+  goal: profile.goal,
+  activity_level: profile.activity_level,
+  health_condition: profile.health_condition ?? "Healthy",
+});
 
       showSuccess("BMI updated successfully");
       navigation.goBack();

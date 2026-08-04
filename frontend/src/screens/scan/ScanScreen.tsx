@@ -45,21 +45,32 @@ export default function ScanScreen() {
       return;
     }
 
-    try {
-      setLoading(true);
+try {
+  setLoading(true);
 
-      const result = await scanFood(selectedImage);
+  const result = await scanFood(selectedImage);
 
-      invalidateHistoryCache();
-      setScanResult(result);
-      setShowResult(true);
-      showSuccess("Food scanned successfully!");
-    } catch (error: any) {
-      showError(getScanErrorMessage(error));
-      resetScan();
-    } finally {
-      setLoading(false);
-    }
+  invalidateHistoryCache();
+  setScanResult(result);
+  setShowResult(true);
+
+  showSuccess("Food scanned successfully!");
+
+} catch (error: any) {
+
+  // Food already scanned today
+  if (error?.response?.status === 409) {
+    showError(error.response.data.detail);
+    resetScan();
+    return;
+  }
+
+  showError(getScanErrorMessage(error));
+  resetScan();
+
+} finally {
+  setLoading(false);
+}
   };
 
   const pickImage = async () => {

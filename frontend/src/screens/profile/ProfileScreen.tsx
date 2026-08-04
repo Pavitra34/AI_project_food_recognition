@@ -122,13 +122,16 @@ export default function ProfileScreen() {
       {
         text: "Logout",
         style: "destructive",
-        onPress: async () => {
-          await clearAuthSession();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Auth" }],
-          });
-        },
+onPress: async () => {
+  console.log("Logout button clicked");
+
+  await clearAuthSession();
+
+  navigation.reset({
+    index: 0,
+    routes: [{ name: "Auth" }],
+  });
+},
       },
     ]);
   };

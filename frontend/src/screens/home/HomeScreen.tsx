@@ -19,6 +19,7 @@ import { getProfile } from "../../services/profileService";
 import { useHistory } from "../../hooks/useHistory";
 import { calculateNutritionSummary } from "../../utils/nutritionSummary";
 import { getFavoriteIds } from "../../services/favoriteService";
+import { getStoredAuthUser } from "../../utils/profileStorage";
 
 const RECENT_SCAN_LIMIT = 10;
 
@@ -57,6 +58,7 @@ const loadHomeData = useCallback(async () => {
     ]);
 
     setProfile(profileData);
+    console.log("PROFILE DATA :", profileData);
     setFavoriteIds(favoriteIdList);
   } catch (error) {
     console.log("Home data load error:", error);
@@ -65,26 +67,42 @@ const loadHomeData = useCallback(async () => {
   }
 }, []);
 
+
+
+const loadWater = useCallback(async () => {
+  try {
+    const user = await getStoredAuthUser();
+
+    if (!user?.id) {
+      setWater(0);
+      return;
+    }
+
+    const key = `water_intake_${user.id}`;
+
+    const savedWater = await AsyncStorage.getItem(key);
+
+    if (savedWater) {
+      setWater(Number(savedWater));
+    } else {
+      setWater(0);
+    }
+
+    console.log("Water Loaded:", savedWater);
+  } catch (error) {
+    console.log(error);
+    setWater(0);
+  }
+}, []);
+
 useFocusEffect(
   useCallback(() => {
-    const loadWater = async () => {
-      try {
-        const savedWater = await AsyncStorage.getItem("water_intake");
-
-        if (savedWater) {
-          setWater(Number(savedWater));
-        } else {
-          setWater(0);
-        }
-      } catch (error) {
-        console.log("Failed to load water:", error);
-      }
-    };
-
     loadHomeData();
     loadWater();
-  }, [loadHomeData])
+  }, [loadHomeData, loadWater])
 );
+
+
 
 const refreshFavorites = useCallback(async () => {
   try {
@@ -95,16 +113,15 @@ const refreshFavorites = useCallback(async () => {
   }
 }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadHomeData();
-    }, [loadHomeData])
-  );
-
-if (loading) {
+if (loading || historyLoading) {
   return (
-    <SafeAreaView style={styles.loaderContainer}>
-      <ActivityIndicator size="large" color="#0F8A83" />
+    <SafeAreaView
+      style={styles.loaderContainer}
+    >
+      <ActivityIndicator
+        size="large"
+        color="#0F8A83"
+      />
     </SafeAreaView>
   );
 }
@@ -120,10 +137,17 @@ if (loading) {
       >
         <Header profile={profile} />
         <SearchBar navigation={navigation} />
+        
         <NutritionCard
   summary={nutritionSummary}
   water={water}
-  goal={2500}
+  goal={profile?.daily_water ?? 2500}
+  dailyGoals={{
+    calories: profile?.daily_calories ?? 0,
+    protein: profile?.daily_protein ?? 0,
+    carbs: profile?.daily_carbs ?? 0,
+    fat: profile?.daily_fat ?? 0,
+  }}
 />
         <BMICard profile={profile} />
         <QuickActions navigation={navigation} />

@@ -31,6 +31,7 @@ export default function EditProfileScreen() {
   const [weight, setWeight] = useState("");
   const [goal, setGoal] = useState("");
   const [activityLevel, setActivityLevel] = useState("");
+  const [healthCondition, setHealthCondition] = useState("");
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -42,6 +43,7 @@ export default function EditProfileScreen() {
         setWeight(profile.weight?.toString() ?? "");
         setGoal(profile.goal ?? "");
         setActivityLevel(profile.activity_level ?? "");
+        setHealthCondition(profile.health_condition ?? "");
       } catch (error) {
         console.log(error);
         showError("Failed to load profile");
@@ -54,22 +56,32 @@ export default function EditProfileScreen() {
   }, []);
 
   const handleSave = async () => {
-    if (!age || !gender || !height || !weight || !goal || !activityLevel) {
-      showError("Please fill all fields");
-      return;
-    }
+    if (
+  !age ||
+  !gender ||
+  !height ||
+  !weight ||
+  !goal ||
+  !activityLevel ||
+  !healthCondition
+) {
+  showError("Please fill all fields");
+  return;
+}
 
     try {
       setSaving(true);
 
-      await updateProfile({
-        age: Number(age),
-        gender,
-        height: Number(height),
-        weight: Number(weight),
-        goal,
-        activity_level: activityLevel,
-      });
+await updateProfile({
+  age: Number(age),
+  gender,
+  height: Number(height),
+  weight: Number(weight),
+  goal,
+  activity_level: activityLevel,
+  health_condition: healthCondition,
+});
+     
 
       showSuccess("Profile updated successfully");
       navigation.goBack();
@@ -228,6 +240,35 @@ export default function EditProfileScreen() {
             ))}
           </View>
 
+          <Text style={styles.sectionTitle}>Health Condition</Text>
+
+<View style={styles.optionContainer}>
+  {[
+    "Healthy",
+    "Diabetes",
+    "Heart Disease",
+    "Kidney Disease",
+    "Pregnant",
+  ].map((item) => (
+    <TouchableOpacity
+      key={item}
+      style={[
+        styles.optionCard,
+        healthCondition === item && styles.choiceCardActive,
+      ]}
+      onPress={() => setHealthCondition(item)}
+    >
+      <Text
+        style={[
+          styles.optionText,
+          healthCondition === item && styles.choiceTextActive,
+        ]}
+      >
+        {item}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
           <TouchableOpacity
             style={styles.saveButton}
             onPress={handleSave}
@@ -361,6 +402,13 @@ const styles = StyleSheet.create({
   measureBox: {
     width: "48%",
   },
+
+  optionContainer: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  marginBottom: 10,
+},
 
   optionCard: {
     backgroundColor: "#F9FAFB",

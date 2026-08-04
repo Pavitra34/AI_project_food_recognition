@@ -13,13 +13,18 @@ import AppHeader from "../../components/common/AppHeader";
 import {
   sendWaterProgressNotification,
 } from "../../services/notificationService";
+import { getStoredAuthUser } from "../../utils/profileStorage";
+
+
 
 export default function WaterReminderScreen() {
-const STORAGE_KEY = "water_intake";
-const DATE_KEY = "water_date";
+// const STORAGE_KEY = "water_intake";
+// const DATE_KEY = "water_date";
 
 const [goal] = useState(2500);
 const [currentWater, setCurrentWater] = useState(0);
+const [storageKey, setStorageKey] = useState("");
+const [dateKey, setDateKey] = useState("");
 
 const percentage = Math.min((currentWater / goal) * 100, 100);
 const progress = currentWater / goal;
@@ -28,6 +33,25 @@ const remaining = Math.max(goal - currentWater, 0);
 let reminderTitle = "";
 let reminderMessage = "";
 let hydrationTip = "";
+
+const initializeKeys = async () => {
+  const user = await getStoredAuthUser();
+
+  const userId = user?.id ?? "guest";
+
+  setStorageKey(`water_intake_${userId}`);
+  setDateKey(`water_date_${userId}`);
+};
+
+useEffect(() => {
+  initializeKeys();
+}, []);
+
+useEffect(() => {
+  if (storageKey && dateKey) {
+    loadWaterData();
+  }
+}, [storageKey, dateKey]);
 
 if (progress >= 1) {
   reminderTitle = "Goal Completed 🎉";
@@ -58,7 +82,10 @@ const addWater = async (amount: number) => {
 
   setCurrentWater(total);
 
-  await AsyncStorage.setItem(STORAGE_KEY, total.toString());
+  await AsyncStorage.setItem(
+  storageKey,
+  total.toString()
+);
 
 const remaining = Math.max(goal - total, 0);
 
@@ -71,7 +98,10 @@ await sendWaterProgressNotification(
 const resetWater = async () => {
   setCurrentWater(0);
 
-  await AsyncStorage.setItem(STORAGE_KEY, "0");
+ await AsyncStorage.setItem(
+  storageKey,
+  "0"
+);
 };
 
 useEffect(() => {
@@ -82,19 +112,22 @@ const loadWaterData = async () => {
   try {
     const today = new Date().toDateString();
 
-    const savedDate = await AsyncStorage.getItem(DATE_KEY);
+    const savedDate = await AsyncStorage.getItem(dateKey);
 
     if (savedDate !== today) {
-      await AsyncStorage.setItem(DATE_KEY, today);
-      await AsyncStorage.setItem(STORAGE_KEY, "0");
+      await AsyncStorage.setItem(dateKey, today);
+      await AsyncStorage.setItem(storageKey, "0");
+
       setCurrentWater(0);
       return;
     }
 
-    const savedWater = await AsyncStorage.getItem(STORAGE_KEY);
+    const savedWater = await AsyncStorage.getItem(storageKey);
 
     if (savedWater) {
       setCurrentWater(Number(savedWater));
+    } else {
+      setCurrentWater(0);
     }
   } catch (e) {
     console.log(e);

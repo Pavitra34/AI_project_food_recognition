@@ -106,9 +106,7 @@ export default function FoodDetailsScreen({
 
           <TouchableOpacity
             style={styles.scanAgain}
-            onPress={() =>
-              navigation.navigate("Home")
-            }
+onPress={() => navigation.navigate("Scan")}
           >
             <Ionicons
               name="camera"

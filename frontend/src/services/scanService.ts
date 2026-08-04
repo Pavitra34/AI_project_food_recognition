@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import { AxiosError } from "axios";
 
 export const MIN_CONFIDENCE = 50;
 
@@ -26,7 +27,10 @@ export type ScanResult = {
   };
 };
 
-export const scanFood = async (imageUri: string): Promise<ScanResult> => {
+
+export const scanFood = async (
+  imageUri: string
+): Promise<ScanResult> => {
   const formData = new FormData();
 
   formData.append("file", {
@@ -35,14 +39,30 @@ export const scanFood = async (imageUri: string): Promise<ScanResult> => {
     type: "image/jpeg",
   } as any);
 
-  const response = await apiClient.post<ScanResult>("/scan", formData, {
-    timeout: 90000,
-  });
+  try {
+    const response = await apiClient.post<ScanResult>(
+      "/scan",
+      formData,
+      {
+        timeout: 90000,
+      }
+    );
 
-  return response.data;
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError<any>;
+
+    console.log("========== SCAN ERROR ==========");
+    console.log("Status :", error.response?.status);
+    console.log("Data :", error.response?.data);
+
+    throw error;
+  }
 };
 
-export const getScanErrorMessage = (error: any): string => {
+export const getScanErrorMessage = (
+  error: any
+): string => {
   const detail = error?.response?.data?.detail;
 
   if (typeof detail === "string") {
