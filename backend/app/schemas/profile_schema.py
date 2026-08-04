@@ -14,6 +14,7 @@ class ProfileUpdateRequest(BaseModel):
 from pydantic import BaseModel
 
 class ProfileResponse(BaseModel):
+
     full_name: str
     email: str
 
@@ -28,6 +29,13 @@ class ProfileResponse(BaseModel):
 
     bmi: float | None = None
     bmi_category: str | None = None
+
+    # Daily Goals
+    daily_calories: float | None = None
+    daily_protein: float | None = None
+    daily_carbs: float | None = None
+    daily_fat: float | None = None
+    daily_water: float | None = None
 
     class Config:
         from_attributes = True

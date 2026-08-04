@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
 from app.utils.jwt import verify_token
+from fastapi import Body
 
 from app.schemas.profile_schema import (
     ProfileUpdateRequest,

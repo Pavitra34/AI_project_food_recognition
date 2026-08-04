@@ -11,6 +11,7 @@ from app.services.ai_service import predict_food
 from app.services.nutrition_service import get_food_nutrition
 from app.models.user import User
 from app.services.recommendation_service import get_recommendation
+from datetime import datetime, timedelta
 
 UPLOAD_FOLDER = "app/uploads/food"
 CONFIDENCE_THRESHOLD = 50
@@ -57,9 +58,7 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
         )
 
     # Nutrition
-    nutrition = get_food_nutrition(
-        prediction["food_name"]
-    )
+    nutrition = get_food_nutrition(prediction["food_name"])
 
     if nutrition is None:
         nutrition = {
@@ -73,6 +72,48 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
 
     # Get User
     user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    # -----------------------------------
+    # Check Duplicate Scan For Today
+    # -----------------------------------
+
+    today_start = datetime.now().replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0
+    )
+
+    tomorrow = today_start + timedelta(days=1)
+
+    existing_scan = (
+        db.query(FoodScan)
+        .filter(
+            FoodScan.user_id == user_id,
+            FoodScan.food_name == prediction["food_name"],
+            FoodScan.created_at >= today_start,
+            FoodScan.created_at < tomorrow,
+        )
+        .first()
+    )
+
+    if existing_scan:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+        raise HTTPException(
+            status_code=409,
+            detail=f"You have already scanned '{prediction['food_name']}' today."
+        )
 
     print("========== USER ==========")
     print("Goal :", user.goal)
@@ -128,3 +169,5 @@ def scan_food(file: UploadFile, user_id: int, db: Session):
         "recommendation": recommendation
     }
 
+
+    

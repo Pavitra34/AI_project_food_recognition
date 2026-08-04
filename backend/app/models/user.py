@@ -24,6 +24,13 @@ class User(Base):
     bmi = Column(Float, nullable=True)
     bmi_category = Column(String(30), nullable=True)
 
+    # Daily Nutrition Goals
+    daily_calories = Column(Float, default=0)
+    daily_protein = Column(Float, default=0)
+    daily_carbs = Column(Float, default=0)
+    daily_fat = Column(Float, default=0)
+    daily_water = Column(Float, default=0)
+
     food_scans = relationship(
         "FoodScan",
         back_populates="user",
