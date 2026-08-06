@@ -432,7 +432,7 @@ make smarter food choices every day.
       style={styles.input}
       placeholder="********"
       placeholderTextColor="#999"
-      secureTextEntry={hidePassword}
+      //TextEntry={hidePassword}
       value={password}
       ref={passwordRef}
       onChangeText={(text) => {
@@ -505,7 +505,7 @@ make smarter food choices every day.
       style={styles.input}
       placeholder="********"
       placeholderTextColor="#999"
-      secureTextEntry={hideConfirmPassword}
+      //secureTextEntry={hideConfirmPassword}
       value={confirmPassword}
       ref={confirmPasswordRef}
       onChangeText={(text) => {

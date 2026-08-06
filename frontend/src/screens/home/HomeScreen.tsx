@@ -3,6 +3,8 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -20,6 +22,9 @@ import { useHistory } from "../../hooks/useHistory";
 import { calculateNutritionSummary } from "../../utils/nutritionSummary";
 import { getFavoriteIds } from "../../services/favoriteService";
 import { getStoredAuthUser } from "../../utils/profileStorage";
+import { Ionicons } from "@expo/vector-icons";
+import AppHeader from "../../components/common/AppHeader";
+
 
 const RECENT_SCAN_LIMIT = 10;
 
@@ -122,45 +127,69 @@ if (loading || historyLoading) {
         size="large"
         color="#0F8A83"
       />
+
     </SafeAreaView>
   );
 }
 
-  return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <StatusBar style="dark" />
+return (
+  <SafeAreaView
+    style={styles.container}
+    edges={["top"]}
+  >
+    <StatusBar style="dark" />
 
+    <View style={{ flex: 1 }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
         <Header profile={profile} />
+
         <SearchBar navigation={navigation} />
-        
+
         <NutritionCard
-  summary={nutritionSummary}
-  water={water}
-  goal={profile?.daily_water ?? 2500}
-  dailyGoals={{
-    calories: profile?.daily_calories ?? 0,
-    protein: profile?.daily_protein ?? 0,
-    carbs: profile?.daily_carbs ?? 0,
-    fat: profile?.daily_fat ?? 0,
-  }}
-/>
+          summary={nutritionSummary}
+          water={water}
+          goal={profile?.daily_water ?? 2500}
+          dailyGoals={{
+            calories: profile?.daily_calories ?? 0,
+            protein: profile?.daily_protein ?? 0,
+            carbs: profile?.daily_carbs ?? 0,
+            fat: profile?.daily_fat ?? 0,
+          }}
+        />
+
         <BMICard profile={profile} />
+
         <QuickActions navigation={navigation} />
-<RecentScans
-  history={recentScans}
-  loading={historyLoading}
-  favoriteIds={favoriteIds}
-  refreshFavorites={refreshFavorites}
-/>
+
+        <RecentScans
+          history={recentScans}
+          loading={historyLoading}
+          favoriteIds={favoriteIds}
+          refreshFavorites={refreshFavorites}
+        />
+
         <HealthTip />
       </ScrollView>
-    </SafeAreaView>
-  );
+
+      {/* Floating AI Chat Button */}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.chatButton}
+        onPress={() => navigation.navigate("Chat")}
+      >
+        <Ionicons
+          name="chatbubble-ellipses"
+          size={28}
+          color="#FFFFFF"
+        />
+      </TouchableOpacity>
+    </View>
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -179,4 +208,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
   },
+  chatButton: {
+  position: "absolute",
+
+  right: 20,
+  bottom: 90,
+
+  width: 65,
+  height: 65,
+
+  borderRadius: 35,
+
+  backgroundColor: "#0F8A83",
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  shadowColor: "#000",
+  shadowOpacity: 0.25,
+  shadowRadius: 6,
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+
+  elevation: 8,
+},
 });

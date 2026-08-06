@@ -177,7 +177,7 @@ try {
           style={styles.input}
           placeholder="Enter your password"
           placeholderTextColor="#999"
-          secureTextEntry={hidePassword}
+          //secureTextEntry={hidePassword}
           value={password}
           onChangeText={setPassword}
         />

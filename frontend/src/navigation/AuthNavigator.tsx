@@ -9,6 +9,7 @@ import HistoryScreen from "../screens/history/HistoryScreen";
 import FoodDetailsScreen from "../screens/home/FoodDetailsScreen";
 import WaterReminderScreen from "../screens/home/WaterReminderScreen";
 import NotificationScreen from "../screens/home/NotificationScreen";
+import ChatScreen from "../screens/chat/ChatScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -64,6 +65,13 @@ export default function AuthNavigator() {
 <Stack.Screen
   name="Notification"
   component={NotificationScreen}
+/>
+<Stack.Screen
+  name="Chat"
+  component={ChatScreen}
+  options={{
+    headerShown: false,
+  }}
 />
   
     </Stack.Navigator>

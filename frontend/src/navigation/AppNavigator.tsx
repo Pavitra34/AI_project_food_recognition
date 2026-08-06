@@ -14,6 +14,7 @@ import EditProfileScreen from "../screens/profile/EditProfileScreen";
 import UpdateBMIScreen from "../screens/profile/UpdateBMIScreen";
 import WaterReminderScreen from "../screens/home/WaterReminderScreen";
 import NotificationScreen from "../screens/home/NotificationScreen";
+import ChatScreen from "../screens/chat/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +82,13 @@ export default function AppNavigator() {
 <Stack.Screen
   name="Notification"
   component={NotificationScreen}
+/>
+<Stack.Screen
+  name="Chat"
+  component={ChatScreen}
+  options={{
+    headerShown: false,
+  }}
 />
       </Stack.Navigator>
     </NavigationContainer>
