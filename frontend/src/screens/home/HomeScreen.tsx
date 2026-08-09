@@ -24,6 +24,7 @@ import { getFavoriteIds } from "../../services/favoriteService";
 import { getStoredAuthUser } from "../../utils/profileStorage";
 import { Ionicons } from "@expo/vector-icons";
 import AppHeader from "../../components/common/AppHeader";
+import { getDashboard } from "../../services/dashboardService";
 
 
 const RECENT_SCAN_LIMIT = 10;
@@ -32,20 +33,24 @@ type Props = {
   navigation: any;
 };
 
+type DashboardData = {
+  today_calories: number;
+  today_protein: number;
+  today_carbs: number;
+  today_fat: number;
+};
 
 export default function HomeScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+const [dashboardData, setDashboardData] =
+  useState<DashboardData | null>(null);
 const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 const [water, setWater] = useState(0);
   const { history, loading: historyLoading } = useHistory({
     refetchOnFocus: true,
   });
 
-  const nutritionSummary = useMemo(
-    () => calculateNutritionSummary(history),
-    [history]
-  );
 
   const recentScans = useMemo(
     () => history.slice(0, RECENT_SCAN_LIMIT),
@@ -57,14 +62,23 @@ const loadHomeData = useCallback(async () => {
   try {
     setLoading(true);
 
-    const [profileData, favoriteIdList] = await Promise.all([
+    const [
+      profileData,
+      favoriteIdList,
+      dashboardData,
+    ] = await Promise.all([
       getProfile(),
       getFavoriteIds(),
+      getDashboard(),
     ]);
 
     setProfile(profileData);
-    console.log("PROFILE DATA :", profileData);
     setFavoriteIds(favoriteIdList);
+    setDashboardData(dashboardData);
+
+    console.log("PROFILE DATA :", profileData);
+    console.log("DASHBOARD DATA :", dashboardData);
+
   } catch (error) {
     console.log("Home data load error:", error);
   } finally {
@@ -83,19 +97,52 @@ const loadWater = useCallback(async () => {
       return;
     }
 
-    const key = `water_intake_${user.id}`;
+    // User-specific storage keys
+    const waterKey = `water_intake_${user.id}`;
+    const waterDateKey = `water_date_${user.id}`;
 
-    const savedWater = await AsyncStorage.getItem(key);
+    // Today's date
+    const today = new Date().toDateString();
 
-    if (savedWater) {
+    // Get saved date
+    const savedDate = await AsyncStorage.getItem(waterDateKey);
+
+    // ------------------------------------
+    // NEW DAY → RESET WATER
+    // ------------------------------------
+    if (savedDate !== today) {
+      await AsyncStorage.setItem(waterKey, "0");
+      await AsyncStorage.setItem(waterDateKey, today);
+
+      setWater(0);
+
+      console.log("========== WATER RESET ==========");
+      console.log("User ID:", user.id);
+      console.log("Previous Date:", savedDate);
+      console.log("Today:", today);
+      console.log("Water Reset To: 0 ml");
+
+      return;
+    }
+
+    // ------------------------------------
+    // SAME DAY → LOAD EXISTING WATER
+    // ------------------------------------
+    const savedWater = await AsyncStorage.getItem(waterKey);
+
+    if (savedWater !== null) {
       setWater(Number(savedWater));
     } else {
       setWater(0);
     }
 
-    console.log("Water Loaded:", savedWater);
+    console.log("========== WATER LOADED ==========");
+    console.log("User ID:", user.id);
+    console.log("Date:", today);
+    console.log("Water:", savedWater ?? "0");
+
   } catch (error) {
-    console.log(error);
+    console.log("Water Load Error:", error);
     setWater(0);
   }
 }, []);
@@ -149,17 +196,23 @@ return (
 
         <SearchBar navigation={navigation} />
 
-        <NutritionCard
-          summary={nutritionSummary}
-          water={water}
-          goal={profile?.daily_water ?? 2500}
-          dailyGoals={{
-            calories: profile?.daily_calories ?? 0,
-            protein: profile?.daily_protein ?? 0,
-            carbs: profile?.daily_carbs ?? 0,
-            fat: profile?.daily_fat ?? 0,
-          }}
-        />
+<NutritionCard
+  summary={{
+    calories: dashboardData?.today_calories ?? 0,
+    protein: dashboardData?.today_protein ?? 0,
+    carbs: dashboardData?.today_carbs ?? 0,
+    fat: dashboardData?.today_fat ?? 0,
+    totalScans: 0,
+  }}
+  water={water}
+  goal={profile?.daily_water ?? 2500}
+  dailyGoals={{
+    calories: profile?.daily_calories ?? 0,
+    protein: profile?.daily_protein ?? 0,
+    carbs: profile?.daily_carbs ?? 0,
+    fat: profile?.daily_fat ?? 0,
+  }}
+/>
 
         <BMICard profile={profile} />
 

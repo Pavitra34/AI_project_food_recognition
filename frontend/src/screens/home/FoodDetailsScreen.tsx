@@ -52,10 +52,6 @@ export default function FoodDetailsScreen({
             {food.food_name.replace(/_/g, " ")}
           </Text>
 
-          <Text style={styles.scanTime}>
-            🕒 {food.created_at ?? "Today"}
-          </Text>
-
           <Text style={styles.section}>
             Nutrition Facts
           </Text>

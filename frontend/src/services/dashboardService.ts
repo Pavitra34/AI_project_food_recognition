@@ -1,11 +1,18 @@
 import { apiClient } from "./apiClient";
 
-export const getDashboard = async () => {
-  try {
-    const response = await apiClient.get("/dashboard");
-    return response.data;
-  } catch (error) {
-    console.log("Dashboard Error:", error);
-    throw error;
-  }
+export type DashboardData = {
+  total_scans: number;
+  today_calories: number;
+  today_protein: number;
+  today_carbs: number;
+  today_fat: number;
+  recent_foods: string[];
+};
+
+export const getDashboard = async (): Promise<DashboardData> => {
+  const response = await apiClient.get<DashboardData>(
+    "/dashboard"
+  );
+
+  return response.data;
 };

@@ -5,12 +5,14 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AppHeader from "../../components/common/AppHeader";
 import FoodCard from "../../components/common/FoodCard";
 import { useHistory } from "../../hooks/useHistory";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HistoryScreen({ navigation }: any) {
   const { history, loading, error, refresh } = useHistory({
@@ -67,6 +69,17 @@ export default function HistoryScreen({ navigation }: any) {
           }
         />
       )}
+      <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.chatButton}
+              onPress={() => navigation.navigate("Chat")}
+            >
+              <Ionicons
+                name="chatbubble-ellipses"
+                size={28}
+                color="#FFFFFF"
+              />
+            </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -112,4 +125,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
+      chatButton: {
+  position: "absolute",
+
+  right: 20,
+  bottom: 90,
+
+  width: 65,
+  height: 65,
+
+  borderRadius: 35,
+
+  backgroundColor: "#0F8A83",
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  shadowColor: "#000",
+  shadowOpacity: 0.25,
+  shadowRadius: 6,
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+
+  elevation: 8,
+},
 });
