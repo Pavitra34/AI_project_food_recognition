@@ -1,12 +1,29 @@
 from sqlalchemy.orm import Session
-
 from app.models.user import User
-from app.schemas.user_schema import UserRegister, UserLogin,UpdateProfile,ChangePassword
+
+from app.schemas.user_schema import (
+    UserRegister,
+    UserLogin,
+    UpdateProfile,
+    ChangePassword,
+    ForgotPasswordRequest,
+    ResetPasswordRequest
+)
+
 from app.utils.helper import hash_password, verify_password
 from app.utils.jwt import create_access_token
 
+import secrets
 
-def register_user(user: UserRegister, db: Session):
+
+# =========================================================
+# REGISTER
+# =========================================================
+
+def register_user(
+    user: UserRegister,
+    db: Session
+):
 
     # Full Name Validation
     if len(user.full_name.strip()) < 3:
@@ -15,22 +32,24 @@ def register_user(user: UserRegister, db: Session):
             "message": "Full name must be at least 3 characters"
         }
 
-    # Password Match Validation
+    # Password Match
     if user.password != user.confirm_password:
         return {
             "success": False,
             "message": "Passwords do not match"
         }
 
-    # Password Length Validation
+    # Password Length
     if len(user.password) < 8:
         return {
             "success": False,
             "message": "Password must be at least 8 characters"
         }
 
-    # Email Duplicate Check
-    existing_user = db.query(User).filter(User.email == user.email).first()
+    # Email Duplicate
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
     if existing_user:
         return {
@@ -38,8 +57,10 @@ def register_user(user: UserRegister, db: Session):
             "message": "Email already exists"
         }
 
-    # Phone Duplicate Check
-    existing_phone = db.query(User).filter(User.phone == user.phone).first()
+    # Phone Duplicate
+    existing_phone = db.query(User).filter(
+        User.phone == user.phone
+    ).first()
 
     if existing_phone:
         return {
@@ -71,7 +92,14 @@ def register_user(user: UserRegister, db: Session):
     }
 
 
-def login_user(user: UserLogin, db: Session):
+# =========================================================
+# LOGIN
+# =========================================================
+
+def login_user(
+    user: UserLogin,
+    db: Session
+):
 
     existing_user = db.query(User).filter(
         User.email == user.email
@@ -113,7 +141,14 @@ def login_user(user: UserLogin, db: Session):
     }
 
 
-def get_profile(db: Session, user_id: int):
+# =========================================================
+# GET PROFILE
+# =========================================================
+
+def get_profile(
+    db: Session,
+    user_id: int
+):
 
     user = db.query(User).filter(
         User.id == user_id
@@ -135,13 +170,17 @@ def get_profile(db: Session, user_id: int):
         }
     }
 
+
+# =========================================================
+# UPDATE PROFILE
+# =========================================================
+
 def update_profile(
     user_id: int,
     user: UpdateProfile,
     db: Session
 ):
 
-    # Logged-in user
     existing_user = db.query(User).filter(
         User.id == user_id
     ).first()
@@ -152,14 +191,12 @@ def update_profile(
             "message": "User not found"
         }
 
-    # Full Name Validation
     if len(user.full_name.strip()) < 3:
         return {
             "success": False,
             "message": "Full name must be at least 3 characters"
         }
 
-    # Phone Duplicate Check
     existing_phone = db.query(User).filter(
         User.phone == user.phone,
         User.id != user_id
@@ -171,7 +208,6 @@ def update_profile(
             "message": "Phone number already exists"
         }
 
-    # Update User
     existing_user.full_name = user.full_name
     existing_user.phone = user.phone
 
@@ -189,14 +225,140 @@ def update_profile(
         }
     }
 
+
+# =========================================================
+# FORGOT PASSWORD - STEP 1
+# =========================================================
+
+def forgot_password(
+    email: str,
+    db: Session
+):
+
+    email = email.strip().lower()
+
+    print("====================================")
+    print("FORGOT PASSWORD SERVICE")
+    print("Email :", email)
+    print("====================================")
+
+    # Find user
+    user = db.query(User).filter(
+        User.email == email
+    ).first()
+
+    if not user:
+        return {
+            "success": False,
+            "message": "No account found with this email"
+        }
+
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+
+    # Save token
+    user.reset_token = reset_token
+
+    db.commit()
+    db.refresh(user)
+
+    print("====================================")
+    print("PASSWORD RESET TOKEN")
+    print("Email :", email)
+    print("Token :", reset_token)
+    print("====================================")
+
+    return {
+        "success": True,
+        "message": "Email verified successfully",
+        "email": email,
+        "reset_token": reset_token
+    }
+
+def reset_password(
+    email: str,
+    reset_token: str,
+    new_password: str,
+    confirm_password: str,
+    db: Session
+):
+
+    email = email.strip().lower()
+
+    user = db.query(User).filter(
+        User.email == email
+    ).first()
+
+    if not user:
+        return {
+            "success": False,
+            "message": "Email not found"
+        }
+
+    # Check reset token
+    if not user.reset_token:
+        return {
+            "success": False,
+            "message": "Reset token not found"
+        }
+
+    if user.reset_token != reset_token:
+        return {
+            "success": False,
+            "message": "Invalid or expired reset token"
+        }
+
+    # Password match
+    if new_password != confirm_password:
+        return {
+            "success": False,
+            "message": "Passwords do not match"
+        }
+
+    # Password length
+    if len(new_password) < 8:
+        return {
+            "success": False,
+            "message": "Password must be at least 8 characters"
+        }
+
+    # Prevent same password
+    if verify_password(
+        new_password,
+        user.password
+    ):
+        return {
+            "success": False,
+            "message": "New password must be different from current password"
+        }
+
+    # Update password
+    user.password = hash_password(new_password)
+
+    # Delete used reset token
+    user.reset_token = None
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "success": True,
+        "message": "Password reset successfully"
+    }
+
+
+# =========================================================
+# CHANGE PASSWORD - LOGGED IN USER
+# =========================================================
+
 def change_password(
-    user_id: int,
     password_data: ChangePassword,
     db: Session
 ):
 
+    # Find user by email
     user = db.query(User).filter(
-        User.id == user_id
+        User.email == password_data.email
     ).first()
 
     if not user:
@@ -229,12 +391,27 @@ def change_password(
             "message": "Password must be at least 8 characters"
         }
 
+    # Prevent same password
+    if verify_password(
+        password_data.new_password,
+        user.password
+    ):
+        return {
+            "success": False,
+            "message": "New password must be different from current password"
+        }
+
     # Hash new password
-    user.password = hash_password(password_data.new_password)
+    user.password = hash_password(
+        password_data.new_password
+    )
 
     db.commit()
+    db.refresh(user)
 
     return {
         "success": True,
         "message": "Password Changed Successfully"
     }
+
+    

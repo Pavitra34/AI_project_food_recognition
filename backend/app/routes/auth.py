@@ -1,20 +1,39 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 
-from app.schemas.user_schema import UserRegister
 from app.database.database import get_db
-from app.services.auth_service import register_user
-from app.schemas.user_schema import UserRegister, UserLogin, UpdateProfile, ChangePassword
-from app.services.auth_service import register_user, login_user,update_profile,change_password
-from fastapi import APIRouter, Depends, Header
-from app.utils.jwt import verify_token
 from app.models.user import User
+
+from app.schemas.user_schema import (
+    UserRegister,
+    UserLogin,
+    UpdateProfile,
+    ChangePassword,
+    ForgotPasswordRequest,
+    ResetPasswordRequest
+)
+
+from app.services.auth_service import (
+    register_user,
+    login_user,
+    update_profile,
+    change_password,
+    forgot_password,
+    reset_password
+)
+
+from app.utils.jwt import verify_token
+
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
 
+
+# ==========================================
+# REGISTER
+# ==========================================
 
 @router.post("/register")
 def register(
@@ -23,6 +42,11 @@ def register(
 ):
     return register_user(user, db)
 
+
+# ==========================================
+# LOGIN
+# ==========================================
+
 @router.post("/login")
 def login(
     user: UserLogin,
@@ -30,13 +54,55 @@ def login(
 ):
     return login_user(user, db)
 
+
+# ==========================================
+# FORGOT PASSWORD
+# ==========================================
+
+@router.post("/forgot-password")
+def forgot_password_request(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    return forgot_password(
+        request.email,
+        db
+    )
+
+
+# ==========================================
+# RESET PASSWORD
+# ==========================================
+
+@router.post("/reset-password")
+def reset_password_route(
+    data: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+
+    return reset_password(
+        data.email,
+        data.reset_token,
+        data.new_password,
+        data.confirm_password,
+        db
+    )
+
+
+# ==========================================
+# GET PROFILE
+# ==========================================
+
 @router.get("/profile")
 def get_profile(
     authorization: str = Header(...),
     db: Session = Depends(get_db)
 ):
 
-    token = authorization.replace("Bearer ", "")
+    token = authorization.replace(
+        "Bearer ",
+        ""
+    )
 
     payload = verify_token(token)
 
@@ -47,8 +113,8 @@ def get_profile(
         }
 
     user = db.query(User).filter(
-    User.id == payload["user_id"]
-).first()
+        User.id == payload["user_id"]
+    ).first()
 
     if not user:
         return {
@@ -62,9 +128,23 @@ def get_profile(
             "id": user.id,
             "full_name": user.full_name,
             "email": user.email,
-            "phone": user.phone
+            "phone": user.phone,
+            "age": user.age,
+            "gender": user.gender,
+            "height": user.height,
+            "weight": user.weight,
+            "goal": user.goal,
+            "activity_level": user.activity_level,
+            "health_condition": user.health_condition,
+            "bmi": user.bmi,
+            "bmi_category": user.bmi_category
         }
     }
+
+
+# ==========================================
+# UPDATE PROFILE
+# ==========================================
 
 @router.put("/profile")
 def update_user_profile(
@@ -72,7 +152,11 @@ def update_user_profile(
     authorization: str = Header(...),
     db: Session = Depends(get_db)
 ):
-    token = authorization.replace("Bearer ", "")
+
+    token = authorization.replace(
+        "Bearer ",
+        ""
+    )
 
     payload = verify_token(token)
 
@@ -87,6 +171,12 @@ def update_user_profile(
         user,
         db
     )
+
+
+# ==========================================
+# CHANGE PASSWORD
+# ==========================================
+
 @router.put("/change-password")
 def update_password(
     password: ChangePassword,
@@ -94,7 +184,10 @@ def update_password(
     db: Session = Depends(get_db)
 ):
 
-    token = authorization.replace("Bearer ", "")
+    token = authorization.replace(
+        "Bearer ",
+        ""
+    )
 
     payload = verify_token(token)
 

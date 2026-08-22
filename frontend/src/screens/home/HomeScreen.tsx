@@ -5,13 +5,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   View,
+  Text
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/home/Header";
-import SearchBar from "../../components/home/SearchBar";
 import NutritionCard from "../../components/home/NutritionCard";
 import QuickActions from "../../components/home/QuickActions";
 import RecentScans from "../../components/home/RecentScans";
@@ -194,7 +194,39 @@ return (
       >
         <Header profile={profile} />
 
-        <SearchBar navigation={navigation} />
+      <TouchableOpacity
+  activeOpacity={0.85}
+  style={styles.precautionButton}
+   onPress={() =>
+    navigation.navigate("Precautions", {
+      healthCondition: profile?.health_condition,
+    })
+  }
+>
+  <View style={styles.precautionIcon}>
+    <Ionicons
+      name="heart-outline"
+      size={24}
+      color="#0F8A83"
+    />
+  </View>
+
+  <View style={styles.precautionTextContainer}>
+    <Text style={styles.precautionTitle}>
+      Your Health Guidance
+    </Text>
+
+    <Text style={styles.precautionSubtitle}>
+      Personalized tips, precautions & videos
+    </Text>
+  </View>
+
+  <Ionicons
+    name="chevron-forward"
+    size={22}
+    color="#058882"
+  />
+</TouchableOpacity>
 
 <NutritionCard
   summary={{
@@ -286,5 +318,52 @@ const styles = StyleSheet.create({
   },
 
   elevation: 8,
+},
+precautionButton: {
+  marginHorizontal: 16,
+  marginBottom: 8,
+  padding: 16,
+  top:12,
+  backgroundColor: "#bdc6c6",
+  borderRadius: 16,
+  flexDirection: "row",
+  alignItems: "center",
+  borderWidth: 1,
+  borderColor: "#E2E8F0",
+  shadowColor: "#000",
+  shadowOpacity: 0.05,
+  shadowRadius: 5,
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  elevation: 2,
+},
+
+precautionIcon: {
+  width: 48,
+  height: 48,
+  borderRadius: 14,
+  backgroundColor: "#E6FFFB",
+  justifyContent: "center",
+  alignItems: "center",
+  marginRight: 12,
+},
+
+precautionTextContainer: {
+  flex: 1,
+
+},
+
+precautionTitle: {
+  fontSize: 16,
+  fontWeight: "700",
+  color: "#0F172A",
+  marginBottom: 4,
+},
+
+precautionSubtitle: {
+  fontSize: 14,
+  color: "#64748B",
 },
 });

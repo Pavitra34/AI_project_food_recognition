@@ -31,6 +31,9 @@ class User(Base):
     daily_fat = Column(Float, default=0)
     daily_water = Column(Float, default=0)
 
+    # Password Reset
+    reset_token = Column(String, nullable=True)
+
     food_scans = relationship(
         "FoodScan",
         back_populates="user",

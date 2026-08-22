@@ -10,6 +10,10 @@ import FoodDetailsScreen from "../screens/home/FoodDetailsScreen";
 import WaterReminderScreen from "../screens/home/WaterReminderScreen";
 import NotificationScreen from "../screens/home/NotificationScreen";
 import ChatScreen from "../screens/chat/ChatScreen";
+import PrecautionsScreen from "../screens/home/PrecautionsScreen";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
+import ChangePasswordScreen from "../screens/auth/ForgotPasswordScreen";
+import ResetPasswordScreen from "../screens/auth/ResetPasswordScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -69,6 +73,24 @@ export default function AuthNavigator() {
 <Stack.Screen
   name="Chat"
   component={ChatScreen}
+  options={{
+    headerShown: false,
+  }}
+/>
+<Stack.Screen
+  name="Precautions"
+  component={PrecautionsScreen}
+/>
+<Stack.Screen
+  name="ForgotPassword"
+  component={ForgotPasswordScreen}
+  options={{
+    headerShown: false,
+  }}
+/>
+<Stack.Screen
+  name="ResetPassword"
+  component={ResetPasswordScreen}
   options={{
     headerShown: false,
   }}

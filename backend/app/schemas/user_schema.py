@@ -17,6 +17,21 @@ class UpdateProfile(BaseModel):
     phone: str
 
 class ChangePassword(BaseModel):
+    email: EmailStr
     current_password: str
+    new_password: str
+    confirm_password: str
+
+# Forgot Password - Step 1
+class ForgotPasswordRequest(BaseModel):
+
+    email: EmailStr
+
+
+# Forgot Password - Step 2
+class ResetPasswordRequest(BaseModel):
+
+    email: EmailStr
+    reset_token: str
     new_password: str
     confirm_password: str
